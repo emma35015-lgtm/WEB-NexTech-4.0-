@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexTech Industries | Presentación de Proyecto</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> <style>
+        :root {
+            /* Paleta Minimalista Académica */
+            --bg: #ffffff;
+            --text-main: #111111;
+            --text-secondary: #555555;
+            --accent: #0056b3; /* Azul Ingeniería */
+            --accent-subtle: #eef4fb;
+            --border: #e1e4e8;
+            --card-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* CANVAS 3D DE FONDO */
+        #canvas-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 1; pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        /* NAVEGACIÓN */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 20px 5%;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); z-index: 1000;
+        }
+        .logo { font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .nav-links a { text-decoration: none; color: var(--text-secondary); margin-left: 25px; font-size: 0.9rem; font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* LAYOUT */
+        .container { max-width: 900px; margin: 0 auto; padding: 0 25px; }
+        
+        section {
+            min-height: 80vh; /* Cada sección ocupa casi toda la pantalla */
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 100px 0;
+            opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; /* Animación de entrada */
+        }
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        /* TIPOGRAFÍA */
+        h1 { font-size: 3.5rem; letter-spacing: -1px; line-height: 1.1; margin-bottom: 20px; background: linear-gradient(to right, #000, #444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 2.2rem; margin-bottom: 30px; border-left: 4px solid var(--accent); padding-left: 20px; }
+        h3 { font-family: 'Crimson Pro', serif; font-size: 1.5rem; color: var(--accent); margin-top: 30px; }
+        p { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; text-align: justify; }
+
+        /* TARJETAS DE INFORMACIÓN */
+        .info-card {
+            background: white; border: 1px solid var(--border);
+            border-radius: 16px; padding: 40px; margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* ENLACE PRINCIPAL */
+        .main-link {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: var(--text-main); color: white; padding: 15px 35px;
+            border-radius: 50px; text-decoration: none; font-weight: 600;
+            margin-top: 20px; transition: transform 0.3s;
+        }
+        .main-link:hover { transform: scale(1.05); background: var(--accent); }
+
+        /* GRÁFICAS Y VISUALES */
+        .chart-container { position: relative; height: 300px; width: 100%; margin: 30px 0; }
+        
+        .diagram-box {
+            display: flex; justify-content: center; background: #f9fafb;
+            padding: 20px; border-radius: 8px; border: 1px dashed #ccc; margin: 20px 0;
+        }
+
+        /* FÓRMULAS */
+        .formula-display {
+            font-size: 1.2rem; text-align: center; padding: 20px;
+            background: var(--accent-subtle); border-radius: 8px; margin: 20px 0;
+        }
+
+        /* JUEGO FINAL */
+        .game-container { text-align: center; background: #fafafa; padding: 30px; border-radius: 16px; border: 1px solid var(--border); }
+        .game-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .game-btn {
+            padding: 15px; border: 1px solid #ddd; background: white; cursor: pointer;
+            border-radius: 8px; font-weight: 600; transition: 0.2s;
+        }
+        .game-btn:hover { background: var(--accent-subtle); border-color: var(--accent); }
+        .feedback-msg { margin-top: 20px; font-weight: bold; min-height: 30px; }
+
+        /* EQUIPO */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px; }
+        .team-member { text-align: center; padding: 20px; background: white; border-radius: 12px; border: 1px solid #eee; box-shadow: var(--card-shadow); }
+        .role { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-top: 5px; display: block; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            nav { padding: 15px; }
+            .nav-links { display: none; } /* Simplificado para móvil */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <nav>
+        <div class="logo">
+            <i class="fas fa-cube"></i> NexTech Industries
+        </div>
+        <div class="nav-links">
+            <a href="#intro">Inicio</a>
+            <a href="#empaque">Colisiones</a>
+            <a href="#robotica">Robótica</a>
+            <a href="#juego">Simulación</a>
+            <a href="#equipo">Equipo</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <section id="intro" class="visible">
+            <span style="text-transform:uppercase; letter-spacing:2px; color:var(--accent); font-size:0.9rem; font-weight:700;">Proyecto Académico 2025</span>
+            <h1>Ingeniería Dinámica &<br>Simulación Computacional</h1>
+            <p style="max-width: 600px;">
+                NexTech Industries presenta una plataforma de validación física para la industria 4.0. 
+                Nuestro objetivo es predecir fallos y optimizar líneas de producción mediante el modelado matemático avanzado.
+            </p>
+            
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid var(--accent); margin-top: 30px;">
+                <h4 style="margin-bottom: 10px;">🚀 Simulador Maestro Disponible</h4>
+                <p style="font-size: 0.95rem; margin-bottom: 15px;">Accede a la aplicación web interactiva completa donde corren las simulaciones en tiempo real.</p>
+                <a href="https://emma35015-lgtm.github.io/NexTech-Industries/" target="_blank" class="main-link">
+                    Abrir Simulador Principal <i class="fas fa-external-link-alt" style="margin-left:8px;"></i>
+                </a>
+            </div>
+        </section>
+
+        <section id="empaque">
+            <h2>Optimización de Línea de Empaque</h2>
+            <div class="info-card">
+                <h3>Problemática: PackTech Solutions</h3>
+                <p>La empresa reporta pérdidas del 15% por daños en producto debido a colisiones en banda. La energía cinética no disipada en los choques se convierte en deformación del material.</p>
+                
+                <h3>Análisis Físico</h3>
+                <p>Utilizamos el <strong>Coeficiente de Restitución ($e$)</strong> para modelar el comportamiento del material. A continuación, una comparativa dinámica de cómo diferentes materiales conservan la energía:</p>
+                
+                <div class="chart-container">
+                    <canvas id="collisionChart"></canvas>
+                </div>
+
+                <h3>Formulación Matemática</h3>
+                <p>Para predecir la velocidad final ($v_f$) y evitar el daño, resolvemos el sistema de ecuaciones de conservación de momento:</p>
+                
+                <div class="formula-display">
+                    $$ v_{1f} = \frac{(m_1 - e m_2)v_{1i} + (1+e)m_2v_{2i}}{m_1 + m_2} $$
+                </div>
+                <p style="font-size: 0.9rem; color: #666;">Esta fórmula está programada en nuestro simulador para ajustar automáticamente la velocidad de la banda transportadora.</p>
+            </div>
+        </section>
+
+        <section id="robotica">
+            <h2>Cinemática de Maquinaria</h2>
+            <div class="info-card">
+                <h3>Problemática: RoboIndustrial</h3>
+                <p>Se requiere optimizar el tiempo de ciclo de un brazo robótico de 2 grados de libertad (2-DOF) sin exceder el torque máximo de los motores ni causar vibraciones por aceleraciones bruscas.</p>
+
+                <div class="diagram-box">
+                    <svg width="300" height="150" viewBox="0 0 300 150">
+                        <rect x="20" y="130" width="60" height="20" fill="#333" />
+                        <g id="arm1" style="transform-origin: 50px 130px; animation: rotateArm 4s infinite alternate ease-in-out;">
+                            <line x1="50" y1="130" x2="150" y2="50" stroke="#0056b3" stroke-width="8" stroke-linecap="round"/>
+                            <circle cx="50" cy="130" r="6" fill="white" stroke="#333"/>
+                            <g id="arm2" style="transform-origin: 150px 50px; animation: rotateForearm 4s infinite alternate ease-in-out;">
+                                <line x1="150" y1="50" x2="250" y2="80" stroke="#0056b3" stroke-width="6" stroke-linecap="round"/>
+                                <circle cx="150" cy="50" r="5" fill="white" stroke="#333"/>
+                                <circle cx="250" cy="80" r="8" fill="#e63946"/> </g>
+                        </g>
+                        <style>
+                            @keyframes rotateArm { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
+                            @keyframes rotateForearm { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+                        </style>
+                    </svg>
+                </div>
+
+                <h3>Relación Cinemática</h3>
+                <p>La velocidad tangencial ($v$) del efector final depende críticamente de la velocidad angular ($\omega$) y el radio de giro ($r$).</p>
+
+                <div class="formula-display">
+                    $$ \vec{v} = \vec{\omega} \times \vec{r} $$
+                </div>
+                <div class="formula-display">
+                    $$ \tau = I \cdot \alpha $$
+                </div>
+                <p>Calculamos el <strong>Torque ($\tau$)</strong> necesario para asegurar que los motores puedan soportar el Momento de Inercia ($I$) durante las fases de aceleración rápida.</p>
+            </div>
+        </section>
+
+        <section id="juego">
+            <h2>Desafío de Ingeniería</h2>
+            <p>Demuestra tu comprensión del sistema para desbloquear la simulación final.</p>
+            
+            <div class="game-container">
+                <div id="game-screen-1">
+                    <h3 style="margin-top:0;">Situación Crítica</h3>
+                    <p>Dos cajas de cristal chocan en la línea. Queremos evitar que se rompan (que reboten suavemente sin deformarse). ¿Qué Coeficiente de Restitución ($e$) buscamos idealmente?</p>
+                    
+                    <div class="game-options">
+                        <button class="game-btn" onclick="checkAnswer(0)">e = 0 (Plástico)</button>
+                        <button class="game-btn" onclick="checkAnswer(1)">e = 1 (Elástico)</button>
+                    </div>
+                </div>
+                <div id="feedback" class="feedback-msg"></div>
+            </div>
+        </section>
+
+        <section id="equipo">
+            <h2 style="border:none; text-align:center;">Equipo de Desarrollo</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h4>Regina Elorza</h4>
+                    <span class="role">Ingeniería Industrial</span>
+                </div>
+                <div class="team-member">
+                    <h4>Jessica Anahí</h4>
+                    <span class="role">Ingeniería Industrial</span>
+                </div>
+                <div class="team-member">
+                    <h4>Regina Rocha</h4>
+                    <span class="role">Ingeniería Industrial</span>
+                </div>
+                <div class="team-member">
+                    <h4>Emmanuel Juárez</h4>
+                    <span class="role">Ingeniería Industrial</span>
+                </div>
+            </div>
+            <footer style="text-align: center; margin-top: 50px; color: #999; font-size: 0.8rem;">
+                © 2025 NexTech Industries • León, Gto.
+            </footer>
+        </section>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- 1. SCROLLYTELLING 3D (THREE.JS) ---
+        const scene = new THREE.Scene();
+        // Fondo blanco puro para estilo minimalista
+        scene.background = new THREE.Color(0xffffff); 
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Objeto Complejo (Grupo)
+        const group = new THREE.Group();
+        scene.add(group);
+
+        // Geometría 1: Núcleo Sólido
+        const coreGeo = new THREE.IcosahedronGeometry(1.5, 0);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xf0f0f0, wireframe: true }); 
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        group.add(core);
+
+        // Geometría 2: Red Exterior
+        const outerGeo = new THREE.IcosahedronGeometry(3, 1);
+        const outerMat = new THREE.MeshBasicMaterial({ 
+            color: 0x0056b3, // Azul NexTech
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.1 
+        });
+        const outer = new THREE.Mesh(outerGeo, outerMat);
+        group.add(outer);
+
+        // Partículas flotantes
+        const particlesGeo = new THREE.BufferGeometry();
+        const particleCount = 100;
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMat = new THREE
